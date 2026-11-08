@@ -2,7 +2,7 @@
   "name": "fraud-rules",
   "version": "0.1.0",
   "private": true,
-  "description": "Fraud rules without a rules engine: a rule is just a name + a predicate.",
+  "description": "Fraud rules as plain code, for before you need a rules engine.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
