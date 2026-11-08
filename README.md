@@ -48,10 +48,3 @@ check({ amount: 50_000, country: "US", hour: 3 }, rules);
 check({ amount: 100, country: "BR", hour: 14 }, rules);
 // [] → approved
 ```
-
-## Tests
-
-```sh
-npm install
-npm test
-```
