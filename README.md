@@ -65,5 +65,11 @@ check({ amount: 100, country: "BR", hour: 14 }, rules);
   here.
 - [ADR 0001](docs/adr/0001-check-throws-instead-of-returning-a-result.md): why
   `check` throws instead of returning a result.
-- [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker):
-  the project that inspired this one.
+
+## Credits
+
+- Inspired by
+  [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker).
+- Built with [Claude Code](https://claude.com/claude-code), using
+  [Matt Pocock's skills](https://github.com/mattpocock/skills) for the
+  architecture review, glossary and ADR.
