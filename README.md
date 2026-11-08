@@ -49,16 +49,6 @@ check({ amount: 100, country: "BR", hour: 14 }, rules);
 // [] → approved
 ```
 
-## When not to approve
-
-`check` only reports which rules fired; deciding what to do is the caller's job.
-Two cases must not be read as approval:
-
-- **No rules.** `check(tx, [])` returns `[]`, but an empty rule set almost
-  always means a config failed to load. Treat it as an error.
-- **A rule throws.** `check` throws too. Treat that as a decline or a manual
-  review, never as approved.
-
 ## Tests
 
 ```sh
