@@ -10,16 +10,19 @@ to read, test, and review.
 
 When engineers own the rules and deploying is cheap, a rule is just a name and
 a predicate. The result is the list of rules that fired; an empty list means
-approved. An empty rule set throws, since it almost always means a config failed
-to load, and so does a rule that throws: an exception is never approval.
+approved. At its core:
 
 ```ts
 export type Rule<T> = { name: string; when: (tx: T) => boolean };
-export const check = <T>(tx: T, rules: readonly Rule<T>[]) => {
-  if (rules.length === 0) throw new Error("check: empty rule set, refusing to approve");
-  return rules.filter(r => r.when(tx)).map(r => r.name);
-};
+export const check = <T>(tx: T, rules: readonly Rule<T>[]) =>
+  rules.filter(r => r.when(tx)).map(r => r.name);
 ```
+
+`check` also refuses rule sets it can't report on: an empty rule set (almost
+always a config that failed to load) and duplicate rule names (the fired list
+would be ambiguous) both throw. A rule that throws makes `check` throw too, with
+the rule's name in the message and the original error as `cause`. An exception
+is never approval.
 
 Anything a rule needs, such as history, velocity or the customer profile, is
 loaded into the transaction beforehand, so rules stay pure functions.

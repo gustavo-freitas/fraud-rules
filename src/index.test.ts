@@ -39,4 +39,30 @@ describe("check(tx, rules) returns the names of the rules that fired", () => {
     };
     expect(() => check({ amount: 100, country: "BR", hour: 14 }, [broken])).toThrow("lookup failed");
   });
+
+  it("names the rule that threw and keeps the original error as the cause", () => {
+    const original = new Error("lookup failed");
+    const broken: Rule<Tx> = {
+      name: "velocity",
+      when: () => {
+        throw original;
+      },
+    };
+    let thrown: unknown;
+    try {
+      check({ amount: 100, country: "BR", hour: 14 }, [...rules, broken]);
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(Error);
+    expect((thrown as Error).message).toBe('check: rule "velocity" failed: lookup failed');
+    expect((thrown as Error).cause).toBe(original);
+  });
+
+  it("throws when two rules share a name (the fired list would be ambiguous)", () => {
+    const duplicate: Rule<Tx> = { name: "high amount", when: tx => tx.amount > 1_000 };
+    expect(() => check({ amount: 100, country: "BR", hour: 14 }, [...rules, duplicate])).toThrow(
+      'duplicate rule name "high amount"',
+    );
+  });
 });
