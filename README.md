@@ -9,13 +9,16 @@ to read, test, and review.
 ## How to solve it
 
 When engineers own the rules and deploying is cheap, a rule is just a name and
-a predicate. The result is the list of rules that fired; an empty list, from a
-non-empty rule set, means approved.
+a predicate. The result is the list of rules that fired; an empty list means
+approved. An empty rule set throws, since it almost always means a config failed
+to load, and so does a rule that throws: an exception is never approval.
 
 ```ts
 export type Rule<T> = { name: string; when: (tx: T) => boolean };
-export const check = <T>(tx: T, rules: readonly Rule<T>[]) =>
-  rules.filter(r => r.when(tx)).map(r => r.name);
+export const check = <T>(tx: T, rules: readonly Rule<T>[]) => {
+  if (rules.length === 0) throw new Error("check: empty rule set, refusing to approve");
+  return rules.filter(r => r.when(tx)).map(r => r.name);
+};
 ```
 
 Anything a rule needs, such as history, velocity or the customer profile, is

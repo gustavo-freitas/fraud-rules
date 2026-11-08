@@ -26,8 +26,8 @@ describe("check(tx, rules) returns the names of the rules that fired", () => {
     ]);
   });
 
-  it("returns an empty list when there are no rules (the caller must treat this as misconfiguration)", () => {
-    expect(check({ amount: 50_000, country: "US", hour: 3 }, [])).toEqual([]);
+  it("throws when there are no rules (an empty rule set is never approval)", () => {
+    expect(() => check({ amount: 50_000, country: "US", hour: 3 }, [])).toThrow("empty rule set");
   });
 
   it("throws when a rule throws (the caller must not treat this as approved)", () => {
