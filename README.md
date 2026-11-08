@@ -6,11 +6,16 @@ Fraud checks often get built on a rules engine (a DSL, scoring, external
 config) before anyone needs one. That adds indirection that makes rules harder
 to read, test, and review.
 
-## How to solve it
+## Who it's for
 
-When engineers own the rules and deploying is cheap, a rule is just a name and
-a predicate. The result is the list of rules that fired; an empty list means
-approved. At its core:
+Most fraud teams end up with analysts owning the rules and changing them
+without a deploy. That's what rules engines are for. This is for the stage
+before that, while engineers own the rules and deploying is cheap.
+
+## How it works
+
+A rule is just a name and a predicate. `check` returns the names of the rules
+that fired; an empty list means approved. At its core:
 
 ```ts
 export type Rule<T> = { name: string; when: (tx: T) => boolean };
@@ -18,22 +23,21 @@ export const check = <T>(tx: T, rules: readonly Rule<T>[]) =>
   rules.filter(r => r.when(tx)).map(r => r.name);
 ```
 
-`check` also refuses rule sets it can't report on: an empty rule set (almost
-always a config that failed to load) and duplicate rule names (the fired list
-would be ambiguous) both throw. A rule that throws makes `check` throw too, with
-the rule's name in the message and the original error as `cause`. An exception
-is never approval.
+`check` throws instead of answering when the answer can't be trusted:
+
+- an empty rule set, which almost always means a config failed to load
+- two rules with the same name, since the result would be ambiguous
+- a rule that throws, rethrown with the rule's name and the original error as
+  `cause`
+
+An exception is never approval.
+
+## What it doesn't do
 
 Anything a rule needs, such as history, velocity or the customer profile, is
-loaded into the transaction beforehand, so rules stay pure functions.
-
-If non-engineers need to change rules at runtime, this can grow without
-replacing the core. Since a `Rule<T>` is plain data, a small layer can build
-rules from config, for example thresholds or country lists that an analyst
-edits, while the predicate logic stays in code. A full rules engine only makes
-sense once analysts need to write new logic, not just tune parameters.
-
-Inspired by [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker).
+loaded into the transaction beforehand, so rules stay pure functions. Building
+that data, tuning thresholds and measuring how good a rule is all happen
+outside this library, and they're the hard part.
 
 ## Example
 
@@ -54,3 +58,9 @@ check({ amount: 50_000, country: "US", hour: 3 }, rules);
 check({ amount: 100, country: "BR", hour: 14 }, rules);
 // [] → approved
 ```
+
+The words used here are defined in [GLOSSARY.md](GLOSSARY.md), and the reason
+`check` throws instead of returning a result is in
+[docs/adr](docs/adr/0001-check-throws-instead-of-returning-a-result.md).
+
+Inspired by [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker).
