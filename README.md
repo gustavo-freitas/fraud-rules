@@ -59,8 +59,11 @@ check({ amount: 100, country: "BR", hour: 14 }, rules);
 // [] → approved
 ```
 
-The words used here are defined in [GLOSSARY.md](GLOSSARY.md), and the reason
-`check` throws instead of returning a result is in
-[docs/adr](docs/adr/0001-check-throws-instead-of-returning-a-result.md).
+## See also
 
-Inspired by [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker).
+- [GLOSSARY.md](GLOSSARY.md): what words like rule, fired and approved mean
+  here.
+- [ADR 0001](docs/adr/0001-check-throws-instead-of-returning-a-result.md): why
+  `check` throws instead of returning a result.
+- [simple-rule-based-fraud-checker](https://github.com/albertllousas/simple-rule-based-fraud-checker):
+  the project that inspired this one.
